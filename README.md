@@ -26,25 +26,21 @@ A robust, secure, and role-based Learning Management System designed to facilita
 ## Tech Stack
 
 ### Backend
-*   **Framework**: Django 6.0
+*   **Framework**: Django
 *   **API**: Django REST Framework (DRF)
 *   **Authentication**: SimpleJWT
 *   **Database**: SQLite (Development)
 *   **Utilities**: Django CORS Headers
 
 ### Frontend
-*   **Library**: React 19
+*   **Library**: React
 *   **Build Tool**: Vite
 *   **Styling**: Tailwind CSS
-*   **Routing**: React Router DOM 7
+*   **Routing**: React Router DOM
 *   **HTTP Client**: Axios (with Interceptors)
 *   **Charts**: Recharts
 
 ## Setup Instructions
-
-### Prerequisites
-*   Node.js (v16+) & npm
-*   Python (v3.10+) & pip
 
 ### 1. Backend Setup
 Navigate to the backend directory:
@@ -81,6 +77,7 @@ Start the Django development server:
 python manage.py runserver
 ```
 *The backend API will run at `http://127.0.0.1:8000/`*
+*The backend Admin Panel will run at `http://127.0.0.1:8000/admin`*
 
 ### 2. Frontend Setup
 Open a new terminal and navigate to the frontend directory:
@@ -102,11 +99,11 @@ npm run dev
 ## Screenshots
 
 ### Login Page
-![Login Page]()
+![Login Page](https://github.com/jijanurrahman/Full-stack-Learning-Management-System-using-Django-and-React/blob/9eb3f720b0c4fb3093cc32564cb0b5b42ab03106/Login-Page.png)
 
 ### Dashboard (Admin View)
-![Dashboard]()
+![Dashboard](https://github.com/jijanurrahman/Full-stack-Learning-Management-System-using-Django-and-React/blob/9eb3f720b0c4fb3093cc32564cb0b5b42ab03106/Dashboard-Page.png)
 
 ### Course Pages (Listing & Details)
-![Course Listing]()
-![Course Details]()
+![Course Listing](https://github.com/jijanurrahman/Full-stack-Learning-Management-System-using-Django-and-React/blob/9eb3f720b0c4fb3093cc32564cb0b5b42ab03106/Course-Listing-Page.png)
+![Course Details](https://github.com/jijanurrahman/Full-stack-Learning-Management-System-using-Django-and-React/blob/9eb3f720b0c4fb3093cc32564cb0b5b42ab03106/Course-Details-Page.png)
