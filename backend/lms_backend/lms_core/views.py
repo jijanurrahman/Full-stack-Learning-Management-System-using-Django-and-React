@@ -11,7 +11,7 @@ from .serializers import (
     CategorySerializer, CourseSerializer, CourseCreateUpdateSerializer,
     EnrollmentSerializer, DashboardStatsSerializer
 )
-from .permissions import IsAdminOrInstructor, IsAdmin, IsStudent
+from .permissions import IsAdminOrInstructor, IsAdmin, IsStudent, IsOwnerOrAdmin
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -39,25 +39,26 @@ class CourseViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         elif self.action in ['create']:
             permission_classes = [IsAuthenticated, IsAdminOrInstructor]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
     
     def get_queryset(self):
         queryset = Course.objects.select_related('instructor', 'category').annotate(
-            enrollment_count=Count('enrollments')
+            annotated_enrollment_count=Count('enrollments')
         )
-        
-        # Filter by instructor if user is instructor
+
+        if self.request.user.is_authenticated and self.request.user.role == 'admin':
+            return queryset
+
+        q_filter = Q(is_published=True)
+
         if self.request.user.is_authenticated and self.request.user.role == 'instructor':
-            if self.action != 'list':
-                queryset = queryset.filter(instructor=self.request.user)
-        
-        # Filter published courses for non-authenticated or student users
-        if not self.request.user.is_authenticated or self.request.user.role == 'student':
-            queryset = queryset.filter(is_published=True)
-        
-        return queryset
+            q_filter |= Q(instructor=self.request.user)
+            
+        return queryset.filter(q_filter)
     
     def perform_create(self, serializer):
         serializer.save(instructor=self.request.user)
@@ -66,12 +67,12 @@ class CourseViewSet(viewsets.ModelViewSet):
     def my_courses(self, request):
         if request.user.role == 'instructor':
             courses = Course.objects.filter(instructor=request.user).annotate(
-                enrollment_count=Count('enrollments')
+                annotated_enrollment_count=Count('enrollments')
             )
         elif request.user.role == 'student':
             enrollments = Enrollment.objects.filter(student=request.user)
             courses = Course.objects.filter(enrollments__in=enrollments).annotate(
-                enrollment_count=Count('enrollments')
+                annotated_enrollment_count=Count('enrollments')
             )
         else:
             courses = Course.objects.none()
@@ -96,10 +97,7 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
         return queryset
     
     def perform_create(self, serializer):
-        if self.request.user.role == 'student':
-            serializer.save(student=self.request.user)
-        else:
-            serializer.save()
+        serializer.save(student=self.request.user)
 
 
 class DashboardStatsView(APIView):
@@ -137,7 +135,7 @@ class CourseReportView(APIView):
     
     def get(self, request):
         courses = Course.objects.select_related('instructor', 'category').annotate(
-            enrollment_count=Count('enrollments')
+            annotated_enrollment_count=Count('enrollments')
         ).order_by('-created_at')
         
         if request.user.role == 'instructor':

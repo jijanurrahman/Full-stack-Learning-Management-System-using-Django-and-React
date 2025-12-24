@@ -18,7 +18,9 @@ class CourseSerializer(serializers.ModelSerializer):
     instructor_name = serializers.CharField(source='instructor.get_full_name', read_only=True)
     instructor_details = UserSerializer(source='instructor', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
-    enrollment_count = serializers.IntegerField(read_only=True)
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    enrollment_count = serializers.SerializerMethodField()
+    is_enrolled = serializers.SerializerMethodField()
     
     class Meta:
         model = Course
@@ -26,9 +28,18 @@ class CourseSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'category', 'category_name',
             'instructor', 'instructor_name', 'instructor_details',
             'thumbnail', 'difficulty', 'duration', 'price',
-            'is_published', 'enrollment_count', 'created_at', 'updated_at'
+            'is_published', 'enrollment_count', 'is_enrolled', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def get_enrollment_count(self, obj):
+        return getattr(obj, 'annotated_enrollment_count', obj.enrollments.count())
+
+    def get_is_enrolled(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Enrollment.objects.filter(student=request.user, course=obj).exists()
+        return False
     
     def validate(self, data):
         request = self.context.get('request')
@@ -60,7 +71,7 @@ class EnrollmentSerializer(serializers.ModelSerializer):
             'course', 'course_title', 'course_details',
             'status', 'progress', 'enrolled_at', 'completed_at'
         ]
-        read_only_fields = ['id', 'enrolled_at']
+        read_only_fields = ['id', 'student', 'enrolled_at']
     
     def validate(self, data):
         request = self.context.get('request')
@@ -70,9 +81,6 @@ class EnrollmentSerializer(serializers.ModelSerializer):
             
             if Enrollment.objects.filter(student=student, course=course).exists():
                 raise serializers.ValidationError("Already enrolled in this course")
-            
-            if student.role != 'student':
-                raise serializers.ValidationError("Only students can enroll in courses")
         
         return data
 
