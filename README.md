@@ -16,7 +16,7 @@ A robust, secure, and role-based Learning Management System designed to facilita
 *   **Dashboard & Reports**: APIs calculating real-time statistics for users, courses, and enrollments.
 
 ### Frontend (React & Tailwind CSS)
-*   **Modern UI**: Responsive and clean interface built with React 19 and Tailwind CSS.
+*   **Modern UI**: Responsive and clean interface built with React and Tailwind CSS.
 *   **Protected Routes**: ensuring users only access pages authorized for their role.
 *   **Dynamic Dashboard**: Visualizing platform statistics with Recharts.
 *   **Course Catalog**: Interactive grid view of available courses with filtering by category.
