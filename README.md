@@ -56,18 +56,17 @@ venv\Scripts\activate
 # Mac/Linux:
 source venv/bin/activate
 ```
-
+Navigate to the backend Project directory:
+```bash
+cd lms_backend
+```
 Install python dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 OR
 ```bash
-pip install asgiref==3.11.0 Django==6.0 django-cors-headers==4.9.0 djangorestframework==3.16.1 djangorestframework_simplejwt==5.5.1 pillow==12.0.0 PyJWT==2.10.1 python-decouple==3.8 sqlparse==0.5.5
-```
-Navigate to the backend Project directory:
-```bash
-cd lms_backend
+pip install asgiref Django django-cors-headers djangorestframework djangorestframework_simplejwt pillow PyJWT python-decouple sqlparse
 ```
 Run database migrations:
 ```bash
